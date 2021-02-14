@@ -9,7 +9,29 @@ import numpy as np
 import h5py
 from scipy import signal
 import matplotlib.pyplot as plt
-import cv2 as cv
+
+def save_model_params_txt(h5_path, txt_path):
+    model = h5py.File(h5_path, "r")
+    names = ["conv1_kernel", "conv1_bias", "conv2_kernel", "conv2_bias",
+             "dense1_weights", "dense1_bias", "dense2_weights", "dense2_bias"]
+    
+    conv1_kernel = np.array(model["conv2d_1"]["conv2d_1"]["kernel:0"])
+    conv1_bias = np.array(model["conv2d_1"]["conv2d_1"]["bias:0"])
+    
+    conv2_kernel = np.array(model["conv2d_2"]["conv2d_2"]["kernel:0"])
+    conv2_bias = np.array(model["conv2d_2"]["conv2d_2"]["bias:0"])
+    
+    dense1_weights = np.array(model["dense_1"]["dense_1"]["kernel:0"])
+    dense1_bias = np.array(model["dense_1"]["dense_1"]["bias:0"])
+    
+    dense2_weights = np.array(model["dense_2"]["dense_2"]["kernel:0"])
+    dense2_bias = np.array(model["dense_2"]["dense_2"]["bias:0"])
+    model.close() 
+    for name in names:
+        shape = eval(name).shape
+        print(shape)
+        np.save("{}{}".format(txt_path, name), eval(name))
+        
 
 def load_model_params(model_path):
     
@@ -88,3 +110,4 @@ def read_image(image, model_path = "model.h5"):
     output = softmax(dense2)
     return output
 
+save_model_params_txt("model.h5", "")
